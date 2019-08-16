@@ -6,7 +6,7 @@
 
 AWindowCaptureActor::AWindowCaptureActor()
 {
-	PrimaryActorTick.bCanEverTick = false;	
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void AWindowCaptureActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -16,24 +16,25 @@ void AWindowCaptureActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		CaptureMachine->Close();
 		CaptureMachine = nullptr;
 	}
-	 
+
 	Super::EndPlay(EndPlayReason);
 }
-
+/*会每帧被蓝图调用*/
 UTexture2D* AWindowCaptureActor::Start()
 {
 	if (CaptureMachine)
 	{
-		CaptureMachine->Close();
+		CaptureMachine->Close(); // 清除之前的资源
 	}
-
+	/*创建UCaptureMachine类*/
 	CaptureMachine = NewObject<UCaptureMachine>(this);
-
+	/*初始化属性*/
 	CaptureMachine->Properties = Properties;
-
+	/*当对象调用重叠时，指定调用*/
 	CaptureMachine->ChangeTexture.AddDynamic(this, &AWindowCaptureActor::OnChangeTexture);
+	/*实时抓取对应进程*/
 	CaptureMachine->Start();
-
+	/*实时获取图片*/
 	return CaptureMachine->CreateTexture();
 }
 
